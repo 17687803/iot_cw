@@ -1,4 +1,3 @@
-
 #include "TLSSocket.h"
 #include "MQTTClientMbedOs.h"
 #include "MQTT.h"
@@ -14,7 +13,7 @@
 #include <iostream>
 
 /* Buffer size for messages */
-const int MESSAGE_BUFFER_SIZE = 512 ;
+const int MESSAGE_BUFFER_SIZE = 512;
 /* Buffers for messages */
 char messageBuffer[MESSAGE_BUFFER_SIZE];
 char* password = new char[JWT_BUF_SIZE];
