@@ -1,0 +1,18 @@
+{
+    "macros": [
+        "MBEDTLS_SHA1_C=1"
+    ],
+    "config": {
+        "main-stack-size": {
+            "value": 8192
+        }
+    },
+    "target_overrides": {
+        "*": {
+            "mbed-trace.enable": null,
+            "platform.stdio-baud-rate": 115200,
+            "platform.stdio-convert-newlines": false,
+            "mbed-mqtt.max-packet-size": "1024"
+           }
+    }
+}
