@@ -1,19 +1,6 @@
-// #include "TLSSocket.h"
-// #include "MQTTClientMbedOs.h"
 #include "MQTT.h"
-// #include "mbed-trace/mbed_trace.h"
-// #include "mbed_events.h"
-// #include "NTPClient.h"
-// #include "jwtgen.h"
-// #include "mbedtls/error.h"
 #include "functions.h"
-// #include <string>
-// #include <fstream>
 #include <stdio.h>
-// #include <iostream>
-
-/* Buffer size for messages */
-//#define MESSAGE_BUFFER_SIZE 512
 
 int main()
 {
