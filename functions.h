@@ -48,7 +48,6 @@ bool MQTT_subscribe(MQTTClient* mqttClient, std::string mqtt_topic_sub);
 bool compose_message(char* messageBuffer, char* temp);
 void terminate_session(void);
 
-
 /**
  * @brief This function initializes the default network interface and establishes a connection to the network. If any errors
  * occur during the initialization process, an error message is printed
