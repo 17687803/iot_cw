@@ -16,22 +16,28 @@ std::string cmdBuffer = "";
 
 bool detect_command(char *pub);
 
+/* Some strings */
+char init[] = "Initialisation complete... Welcome!";
+char greet[] = "Hello Jacob. How can i help you today?";
 
 /**
  * @brief This function detects and extracts a specific command from a string buffer
- * Searches for the substring "Word: " in buffer and extracts the word following it, if it exists.
  * The extracted word is then saved as a null-terminated character array, passed in by reference.
- * @param pub Pointer to the null-terminated character array where the extracted word will be saved
+ * 
+ * @param msg Pointer to the null-terminated character array where the extracted word will be saved
  * @return True if the command is found, False otherwise
 */
-bool detect_command(char *pub){ 
+bool detect_command(char *msg){ 
+    /* Find position of the strings "Word: "&"\r\n"  */
     std::size_t start = cmdBuffer.find("Word: ");
     std::size_t end = cmdBuffer.find("\r\n");
+    /* Check if both starting and ending positions are found */
     if(start != std::string::npos && end != std::string::npos) {
-        std::size_t wordStart = cmdBuffer.find("=", start) + 2;             FTDI.printf("command found\r\n");
+        /* Extract the word from cmdBuffer */
+        std::size_t wordStart = cmdBuffer.find("=", start) + 2;             
         string word = cmdBuffer.substr(wordStart, end-wordStart);
-        char pub[word.size()+1];
-        strcpy(pub, word.c_str());
+        /* Allocate memory & copy word */
+        strcpy(msg, word.c_str());
         return true;
     }
     return false;

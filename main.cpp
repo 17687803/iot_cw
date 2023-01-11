@@ -49,10 +49,10 @@ int main()
             printf("ERROR: rc from MQTT subscribe is %d\r\n", rc);
         } else isSubscribed = true;
 
-    /* Enable button 1 for publishing a message */
+    /* B1 = test message  */
     InterruptIn btn1(BUTTON1);
     btn1.rise(handleButtonRise);
-
+    publish_message(init);
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
         /* Client is disconnected */
@@ -89,7 +89,8 @@ int main()
         if(EOL == 1) {   
             EOL = 0;                                                    //FTDI.printf("%s\r\n",buffer.c_str());
             if(detect_command(pub)){
-                publish_message(pub);
+                //resp = respond(pub);
+                publish_message(greet);
             }            
             cmdBuffer.clear();
         }
@@ -100,4 +101,3 @@ int main()
     terminate_session();
 
 }
-
