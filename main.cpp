@@ -53,6 +53,8 @@ int main()
     InterruptIn btn1(BUTTON1);
     btn1.rise(handleButtonRise);
     publish_message(init);
+    ThisThread::sleep_for(2000);
+    
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
         /* Client is disconnected */
@@ -81,7 +83,7 @@ int main()
                 evt = rx_buf.get();
                 if(evt.status == osEventMessage) {
                 /* Event Message received */                            //FTDI.printf("OSEM trig\r\n");   
-                    cmdBuffer += static_cast<char>(evt.value.v);           //FTDI. printf("buf: %s\r\n",buffer.c_str());
+                    cmdBuffer += static_cast<char>(evt.value.v);        //FTDI. printf("buf: %s\r\n",buffer.c_str());
                 }
             }
             qflg = 0;
@@ -89,8 +91,9 @@ int main()
         if(EOL == 1) {   
             EOL = 0;                                                    //FTDI.printf("%s\r\n",buffer.c_str());
             if(detect_command(pub)){
-                //resp = respond(pub);
-                publish_message(greet);
+                if(respond(pub)){                                       //FTDI.printf("pub recv %s", pub);
+                publish_message(pub);
+                }
             }            
             cmdBuffer.clear();
         }
