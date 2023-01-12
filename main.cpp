@@ -1,27 +1,19 @@
 #include "MQTT.h"
 #include "functions.h"
 #include "EZvr.h"
+#include "Joystick.h"
+#include "N5110.h"
 #include <stdio.h>
 #include <iostream>
 #include <string>
 
-void rx_interrupt() {
-    int c = serial.getc();
-    if(c == '\r') {
-        qflg = 1;
-    }
-    if(c == '\n') {
-        EOL = 1; 
-        qflg = 1;
-    }
-    if(c >= 0) {
-        rx_buf.put((char *)c);
-        qflg = 1;
-    }
-}
+void rx_interrupt();
+
+N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
 
 int main()
 {
+
     int count = 0;                                                  FTDI.printf("main\r\n");printf("main\r\n");
     char pub[1024];
     serial.attach(&rx_interrupt, Serial::RxIrq);                    // printf("attach \r\n");
@@ -57,6 +49,8 @@ int main()
     
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
+        //lcd.clear();
+        //lcd.printString(pub,0,0);
         /* Client is disconnected */
         if(!mqttClient->isConnected()){        
             break;  
@@ -102,5 +96,20 @@ int main()
     /* client has disconnected */
     printf("The client has disconnected.\r\n");
     terminate_session();
+}
 
+
+void rx_interrupt() {
+    int c = serial.getc();
+    if(c == '\r') {
+        qflg = 1;
+    }
+    if(c == '\n') {
+        EOL = 1; 
+        qflg = 1;
+    }
+    if(c >= 0) {
+        rx_buf.put((char *)c);
+        qflg = 1;
+    }
 }

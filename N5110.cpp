@@ -12,7 +12,7 @@ N5110::N5110(PinName const pwrPin,
              PinName const sclkPin,
              PinName const ledPin)
     :
-    _spi(new SPI(mosiPin,NC,sclkPin)), // create new SPI instance and initialise
+    _spi(new SPI(mosiPin,NC,sclkPin,NC)), // create new SPI instance and initialise
     _led(new PwmOut(ledPin)),
     _pwr(new DigitalOut(pwrPin)),
     _sce(new DigitalOut(scePin)),
@@ -30,7 +30,7 @@ N5110::N5110(PinName const scePin,
              PinName const sclkPin,
              PinName const ledPin)
     :
-    _spi(new SPI(mosiPin,NC,sclkPin)), // create new SPI instance and initialise
+    _spi(new SPI(mosiPin,NC,sclkPin,NC)), // create new SPI instance and initialise
     _led(new PwmOut(ledPin)),
     _pwr(NULL), // pwr not needed so null it to be safe
     _sce(new DigitalOut(scePin)),

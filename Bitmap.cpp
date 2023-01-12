@@ -1,7 +1,5 @@
 #include "Bitmap.h"
-
 #include <iostream>
-
 #include "N5110.h"
 
 Bitmap::Bitmap(int const               *contents,
