@@ -1,25 +1,6 @@
 #include "mbed.h"
 #include "N5110.h"
 
-// overloaded constructor includes power pin - LCD Vcc connected to GPIO pin
-// this constructor works fine with LPC1768 - enough current sourced from GPIO
-// to power LCD. Doesn't work well with K64F.
-N5110::N5110(PinName const pwrPin,
-             PinName const scePin,
-             PinName const rstPin,
-             PinName const dcPin,
-             PinName const mosiPin,
-             PinName const sclkPin,
-             PinName const ledPin)
-    :
-    _spi(new SPI(mosiPin,NC,sclkPin,NC)), // create new SPI instance and initialise
-    _led(new PwmOut(ledPin)),
-    _pwr(new DigitalOut(pwrPin)),
-    _sce(new DigitalOut(scePin)),
-    _rst(new DigitalOut(rstPin)),
-    _dc(new DigitalOut(dcPin))
-{}
-
 // overloaded constructor does not include power pin - LCD Vcc must be tied to +3V3
 // Best to use this with K64F as the GPIO hasn't sufficient output current to reliably
 // drive the LCD.
@@ -30,7 +11,7 @@ N5110::N5110(PinName const scePin,
              PinName const sclkPin,
              PinName const ledPin)
     :
-    _spi(new SPI(mosiPin,NC,sclkPin,NC)), // create new SPI instance and initialise
+    _spi(new SPI(mosiPin,NC,sclkPin)), // create new SPI instance and initialise
     _led(new PwmOut(ledPin)),
     _pwr(NULL), // pwr not needed so null it to be safe
     _sce(new DigitalOut(scePin)),

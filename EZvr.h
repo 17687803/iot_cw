@@ -16,6 +16,8 @@ std::string cmdBuffer = "";
 
 bool detect_command(char *msg);
 bool respond(char *command);
+bool extract_str(char *msg, std::size_t start, std::size_t end);
+void rx_interrupt();
 
 /* Some strings */
 char init[] = "Initialisation complete... Welcome!";
@@ -105,18 +107,28 @@ bool detect_command(char *msg){
     /* Find position of the strings "Word: "&"\r\n"  */
     std::size_t start = cmdBuffer.find("Word: ");
     std::size_t end = cmdBuffer.find("\r\n");
-    /* Check if both starting and ending positions are found */
-    if(start != std::string::npos && end != std::string::npos) {
-        /* Extract the word from cmdBuffer */
-        std::size_t wordStart = cmdBuffer.find("=", start) + 2;             
-        string word = cmdBuffer.substr(wordStart, end-wordStart);
-        /* Allocate memory & copy word */
-        strcpy(msg, word.c_str());
-        return true;
+    if(!extract_str(msg, start, end)){
+        /* Or find position of the strings "Command: "&"\r\n"  */
+        start = cmdBuffer.find("Command: ");
+        end = cmdBuffer.find("\r\n");
+        if(!extract_str(msg, start, end)){
+            return false;
+        }
     }
-    /* Or find position of the strings "Command: "&"\r\n"  */
-    start = cmdBuffer.find("Command: ");
-    end = cmdBuffer.find("\r\n");
+    return true;
+}
+
+
+/**
+ * @brief Extracts a string from a larger string, cmdBuffer, based on the provided starting and ending positions.
+ * The extracted string is then copied to the memory location pointed to by the msg parameter.
+ * 
+ * @param msg pointer to the string to be extracted
+ * @param start starting position of the string to be extracted
+ * @param end ending position of the string to be extracted
+ * @return true if the extraction is successful, false otherwise
+*/
+bool extract_str(char *msg, std::size_t start, std::size_t end){
     /* Check if both starting and ending positions are found */
     if(start != std::string::npos && end != std::string::npos) {
         /* Extract the word from cmdBuffer */
@@ -127,5 +139,23 @@ bool detect_command(char *msg){
         return true;
     }
     return false;
+}
+/**
+ * @brief Interrupt handler for receiving serial data.
+ * function reads the serial port and if valid character puts it on the buffer, if end of line raises a flag
+*/
+void rx_interrupt() {
+    int c = serial.getc();
+    if(c == '\r') {
+        qflg = 1;
+    }
+    if(c == '\n') {
+        EOL = 1; 
+        qflg = 1;
+    }
+    if(c >= 0) {
+        rx_buf.put((char *)c);
+        qflg = 1;
+    }
 }
 #endif /* __EZVR_H__ */

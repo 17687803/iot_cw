@@ -17,23 +17,28 @@
 
 #define MESSAGE_BUFFER_SIZE 512
 /* globals */
+
 /* Buffers for messages */
 char messageBuffer[MESSAGE_BUFFER_SIZE];
 char* password = new char[JWT_BUF_SIZE];
 char temp[MESSAGE_BUFFER_SIZE] = {};
+
 /* MQTT Client IDs */
 std::string mqtt_client_id = std::string("projects/") + PROJ_ID + "/locations/" + REGION + "/registries/" + REGISTRY + "/devices/" + DEV_ID;
 std::string mqtt_topic_pub = std::string("/devices/") + DEV_ID  + "/events";
 std::string mqtt_topic_sub = std::string("/devices/") + DEV_ID  + "/commands/#";
+
 /* Flags */
 static volatile bool isPublish = false;
 static unsigned int msg_init = 0;
 static volatile bool MessageArrived = false;
 static volatile bool isSubscribed = false;
+
 /* Network Global Parameters */
 NetworkInterface* network = NULL;
 TLSSocket *socket = new TLSSocket;
 MQTTClient* mqttClient = NULL;
+
 
 /* Function prototypes */
 int getPassword(char *buf, size_t buf_size);
@@ -244,6 +249,7 @@ void handleMqttMessage(MQTT::MessageData& md)
 void handleButtonRise() {
     isPublish = true;
 }
+
 
 /**
  * @brief Terminates MQTT session.

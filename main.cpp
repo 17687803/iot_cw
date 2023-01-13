@@ -7,14 +7,12 @@
 #include <iostream>
 #include <string>
 
-void rx_interrupt();
-
 N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
 
 int main()
 {
-
-    int count = 0;                                                  FTDI.printf("main\r\n");printf("main\r\n");
+    //lcd.init();
+    int count = 0;                                                  //FTDI.printf("main\r\n");printf("main\r\n");
     char pub[1024];
     serial.attach(&rx_interrupt, Serial::RxIrq);                    // printf("attach \r\n");
     
@@ -49,8 +47,6 @@ int main()
     
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
-        //lcd.clear();
-        //lcd.printString(pub,0,0);
         /* Client is disconnected */
         if(!mqttClient->isConnected()){        
             break;  
@@ -70,7 +66,7 @@ int main()
             count++;
             publish_message(pub);
         }
-
+        /* Respond to char on Rx buf */
         if(qflg){
         /* non-blocking serial read */                                  //FTDI.printf("qflg trig\r\n");
             while(!rx_buf.empty()){
@@ -82,9 +78,12 @@ int main()
             }
             qflg = 0;
         }
+        /* End of line on serial detected */ 
         if(EOL == 1) {   
             EOL = 0;                                                    //FTDI.printf("%s\r\n",buffer.c_str());
+            /* If command*/
             if(detect_command(pub)){
+                /* generate response and publish to GCP*/
                 if(respond(pub)){                                       //FTDI.printf("pub recv %s", pub);
                 publish_message(pub);
                 }
@@ -99,17 +98,3 @@ int main()
 }
 
 
-void rx_interrupt() {
-    int c = serial.getc();
-    if(c == '\r') {
-        qflg = 1;
-    }
-    if(c == '\n') {
-        EOL = 1; 
-        qflg = 1;
-    }
-    if(c >= 0) {
-        rx_buf.put((char *)c);
-        qflg = 1;
-    }
-}
