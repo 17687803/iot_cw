@@ -75,6 +75,7 @@ int init_network(void){
     printf("\r\n");
     return 0;
 }
+
 /**
  * @brief Generate a JWT token and save it to a buffer.
  * If the token cannot be generated, an error message is printed.
@@ -114,6 +115,7 @@ int getPassword(char *buf, size_t buf_size) {
     }
     return ret;
 }
+
 /**
  * @brief This function establishes a network connection using the specified host name and port. 
  * It also sets the root CA certificate and client certificate/key to be used for secure connections. 
@@ -144,7 +146,7 @@ int connect_network(void){
 }
 
 /**
- * @brief Connect to MQTT server with provided client ID and password
+ * @brief Connect to MQTT server with provided client ID and password.
  * 
  * @param password Password to use for MQTT connection
  * @param mqtt_client_id Client ID to use for MQTT connection
@@ -170,10 +172,9 @@ int MQTT_connect(char* password, std::string mqtt_client_id){
 }
 
 /**
- * @brief Publishes a message to the subscribed MQTT topic
- * This function composes a message using the specified input string and publishes it to the specified topic. If any
- * errors occur during the publishing process, an error message is printed and the function returns the error code.
- * Otherwise, the function returns 0.
+ * @brief Publishes a message to the subscribed MQTT topic.
+ * Compose a message using the specified input string and publishes it to the specified topic. 
+ *
  * @param input The input string to be used to compose the message.
  * @return 0 if the message was published successfully, or the error code if an error occurred.
  */

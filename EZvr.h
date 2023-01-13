@@ -19,7 +19,7 @@ bool respond(char *command);
 bool extract_str(char *msg, std::size_t start, std::size_t end);
 void rx_interrupt();
 
-/* Some strings */
+/* Some response strings */
 char init[] = "Initialisation complete... Welcome!";
 char auth[] = "Please say the password to authorise identity";
 char greet[] = "Hello Jacob. How can i help you today?";
@@ -34,7 +34,7 @@ char sub[] = "Pick some numbers to subtract, say zero when finished.";
 char spell[] = "What would you like me to spell?";
 char xylo[] = "Xylophone is spelled x, y, l, o, p, h, o, n, e";
 char acqu[] = "Acquiesce is spelled a, c, q, u, i, e, s, c, e";
-
+ 
 /**
 * @brief  respond to a command
 * This function responds to a command by comparing it to string literals
