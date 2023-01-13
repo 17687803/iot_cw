@@ -2,16 +2,18 @@
 #include "functions.h"
 #include "EZvr.h"
 #include "Joystick.h"
-#include "N5110.h"
+
+#include "lcd.h"
 #include <stdio.h>
 #include <iostream>
 #include <string>
 
-N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
+// N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
 
 int main()
 {
-    //lcd.init();
+    lcd_init();
+    write_to_display("Initialising..");
     int count = 0;                                                  //FTDI.printf("main\r\n");printf("main\r\n");
     char pub[1024];
     serial.attach(&rx_interrupt, Serial::RxIrq);                    // printf("attach \r\n");
@@ -43,10 +45,12 @@ int main()
     InterruptIn btn1(BUTTON1);
     btn1.rise(handleButtonRise);
     publish_message(init);
-    ThisThread::sleep_for(2000);
+    ThisThread::sleep_for(5000);
     
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
+        /* Update display */
+        write_to_display("this is a long string to test my long string functionality.");
         /* Client is disconnected */
         if(!mqttClient->isConnected()){        
             break;  
@@ -96,5 +100,3 @@ int main()
     printf("The client has disconnected.\r\n");
     terminate_session();
 }
-
-
