@@ -6,7 +6,7 @@ Joystick::Joystick(PinName vertPin,PinName horizPin,PinName clickPin)
     horiz = new AnalogIn(horizPin);
     click = new InterruptIn(clickPin);
 }
-
+//text
 void Joystick::init()
 {
     // read centred values of joystick

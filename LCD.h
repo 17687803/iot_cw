@@ -30,7 +30,7 @@ void lcd_init(void){
 
 /**
  * @brief Writes the input string to the display by splitting it into smaller strings with a maximum length of 14 characters.
- *
+ * 
  * @param input_string The input string to be written to the display.
  */
  void write_to_display(const char* input_string) {

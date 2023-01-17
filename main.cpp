@@ -8,8 +8,6 @@
 #include <iostream>
 #include <string>
 
-// N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
-
 int main()
 {
     lcd_init();
