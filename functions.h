@@ -244,13 +244,12 @@ void handleMqttMessage(MQTT::MessageData& md)
     MessageArrived = true;
 }
 
-/*
- * Callback function called when button is pushed.
+/**
+ * @brief Callback function called when button is pushed.
  */
 void handleButtonRise() {
     isPublish = true;
 }
-
 
 /**
  * @brief Terminates MQTT session.

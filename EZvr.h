@@ -4,7 +4,7 @@
 #include "mbed.h"
 #include <string>
 
-RawSerial FTDI(PTC17, PTC16, 115200);       //UART3
+RawSerial FTDI(PTC17, PTC16, 115200);       //UART3 - FTDI used to debug whilst USB serial was in use
 RawSerial serial(USBTX, USBRX, 115200);
 
 Queue<char, 128> rx_buf;
@@ -117,6 +117,45 @@ bool detect_command(char *msg){
     }
     return true;
 }
+
+/**
+ * @brief This function detects if the sensor has timed out and updates the display buffer appropriately
+ * 
+ * @param d_buff Pointer to the null-terminated character array where the word to be displayed is stored
+ * @return True if the timeout is found, False otherwise
+*/
+bool detect_timeout(char *d_buff) {
+    int i, j;
+    char error_string[] = "Error";
+    char timeout_string[] = "Timed out";
+    int str_len = strlen(cmdBuffer.c_str());
+    int error_len = strlen(error_string);
+    int timeout_len = strlen(timeout_string);
+    for (i = 0; i < str_len - error_len + 1; i++) {
+        for (j = 0; j < error_len; j++) {
+            if (cmdBuffer.c_str()[i + j] != error_string[j]) {
+                break;
+            }
+        }
+        if (j == error_len) {
+            d_buff = "Timed out!\n\rTry again.";
+            return true;
+        }
+    }
+    for (i = 0; i < str_len - timeout_len + 1; i++) {
+        for (j = 0; j < timeout_len; j++) {
+            if (cmdBuffer.c_str()[i + j] != timeout_string[j]) {
+                break;
+            }
+        }
+        if (j == timeout_len) {
+            d_buff = "Timed out!\n\rTry again.";
+            return true;
+        }
+    }
+    return false;
+}
+
 
 
 /**

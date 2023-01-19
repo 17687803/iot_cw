@@ -3,17 +3,20 @@
 #include "EZvr.h"
 #include "Joystick.h"
 
-#include "lcd.h"
+#include "LCD.h"
 #include <stdio.h>
 #include <iostream>
 #include <string>
 
 int main()
 {
+
+    int count = 0, timed = 0;                                       //FTDI.printf("main\r\n");printf("main\r\n");
+    char pub[128], display[128];
+    Ticker timeOut;
+    
     lcd_init();
-    write_to_display("Initialising..");
-    int count = 0;                                                  //FTDI.printf("main\r\n");printf("main\r\n");
-    char pub[1024];
+    write_to_display("initialising");
     serial.attach(&rx_interrupt, Serial::RxIrq);                    // printf("attach \r\n");
     
     if(init_network() < 0){
@@ -48,7 +51,7 @@ int main()
     /* while loop constantly checks for connection or if a message needs to be send or parsed*/
     while(1) {
         /* Update display */
-        write_to_display("this is a long string to test my long string functionality.");
+        //write_to_display(display);
         /* Client is disconnected */
         if(!mqttClient->isConnected()){        
             break;  
@@ -75,7 +78,7 @@ int main()
                 evt = rx_buf.get();
                 if(evt.status == osEventMessage) {
                 /* Event Message received */                            //FTDI.printf("OSEM trig\r\n");   
-                    cmdBuffer += static_cast<char>(evt.value.v);        //FTDI. printf("buf: %s\r\n",buffer.c_str());
+                    cmdBuffer += static_cast<char>(evt.value.v);        //FTDI.printf("buf: %s\r\n",buffer.c_str());
                 }
             }
             qflg = 0;
@@ -89,6 +92,16 @@ int main()
                 if(respond(pub)){                                       //FTDI.printf("pub recv %s", pub);
                 publish_message(pub);
                 }
+            }
+            /* Print a timeout message for 1s if timed out */
+            if(detect_timeout(display) && guard == 0){
+                guard = 1;                                              //FTDI.printf("timed out");
+
+                /*************************************************BROKEN
+                timeOut.attach(&display_int, 1.0);
+                ***************************************************/
+
+                write_to_display("timed out! Please try again");
             }            
             cmdBuffer.clear();
         }
