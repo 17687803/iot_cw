@@ -78,7 +78,6 @@ void write_to_display(const char* input_string) {
  */
 void display_int(void){
     guard = 0;
-    write_to_display("Please speak now..");
 }
 
 #endif /* __LCD_H__ */

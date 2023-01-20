@@ -29,7 +29,7 @@ std::string mqtt_topic_pub = std::string("/devices/") + DEV_ID  + "/events";
 std::string mqtt_topic_sub = std::string("/devices/") + DEV_ID  + "/commands/#";
 
 /* Flags */
-static volatile bool isPublish = false;
+static volatile bool testPublish = false;
 static unsigned int msg_init = 0;
 static volatile bool MessageArrived = false;
 static volatile bool isSubscribed = false;
@@ -48,10 +48,15 @@ int MQTT_connect(char* password, std::string mqtt_client_id);
 int publish_message(char* input);
 void generate_jwt_token(char* password, int size);
 void handleMqttMessage(MQTT::MessageData& md);
+void config_io(void);
 void handleButtonRise(void);
+void handleButton2Rise(void);
 bool MQTT_subscribe(MQTTClient* mqttClient, std::string mqtt_topic_sub);
 bool compose_message(char* messageBuffer, char* temp);
 void terminate_session(void);
+
+
+    
 
 /**
  * @brief This function initializes the default network interface and establishes a connection to the network. If any errors
@@ -180,7 +185,7 @@ int MQTT_connect(char* password, std::string mqtt_client_id){
  */
 int publish_message(char* input){
     /* reset flag */
-    isPublish = false;
+    testPublish = false;
     /* Compose the message using the input string and messageBuffer */
     if(!(compose_message(messageBuffer, input)))
     {
@@ -244,12 +249,7 @@ void handleMqttMessage(MQTT::MessageData& md)
     MessageArrived = true;
 }
 
-/**
- * @brief Callback function called when button is pushed.
- */
-void handleButtonRise() {
-    isPublish = true;
-}
+
 
 /**
  * @brief Terminates MQTT session.
