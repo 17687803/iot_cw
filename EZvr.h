@@ -1,22 +1,37 @@
+/**
+ * @file   EZvr.h
+ * @author Jacob Corr
+ * @date   22/01/2023
+ * @brief  Header file containing functions that interface with the EasyVR3 voice sensor
+ */
+
 #ifndef __EZVR_H__
 #define __EZVR_H__
 
+
 #include "mbed.h"
 #include <string>
+#include <sstream>
 
 RawSerial FTDI(PTC17, PTC16, 115200);       //UART3 - FTDI used to debug whilst USB serial was in use
 RawSerial serial(USBTX, USBRX, 115200);
 
 Queue<char, 128> rx_buf;
 EventQueue queue;
-int qflg = 0;
-int EOL = 0;
+int qflg = 0, EOL = 0, math = 0, number = 0;
+int ALU = 0, num_count = 0;
+int new_num[128] = {0};
+char num_str[128] = {};
+double answer = 0; 
 osEvent evt = {};
 std::string cmdBuffer = "";
+std::string extracted_str;
+std::stringstream ss;
 
 bool detect_command(char *msg);
 bool respond(char *command);
 bool extract_str(char *msg, std::size_t start, std::size_t end);
+bool detect_math(char *msg);
 void rx_interrupt();
 
 /* Some response strings */
@@ -27,10 +42,10 @@ char query[] = "What can i help you with?";
 char query2[] = "Can i help with anything else?";
 char subject[] = "Which subject do you need help with?";
 char maths[] = "Yes i can help with Maths. What would you like me to do?";
-char add[] = "Pick some numbers to add, say zero when finished.";
-char mult[] = "Pick some numbers to multiply, say zero when finished.";
-char divide[] = "Pick some numbers to divide, say zero when finished.";
-char sub[] = "Pick some numbers to subtract, say zero when finished.";
+char add[] = "Pick some numbers to add, separated by the word and. say finished when complete.";
+char mult[] = "Pick some numbers to multiply, separated by the word and. say finished when complete.";
+char divide[] = "Pick some numbers to divide, separated by the word and. say finished when complete.";
+char sub[] = "Pick some numbers to subtract, separated by the word and. say finished when complete.";
 char spell[] = "What would you like me to spell?";
 char xylo[] = "Xylophone is spelled x, y, l, o, p, h, o, n, e";
 char acqu[] = "Acquiesce is spelled a, c, q, u, i, e, s, c, e";
@@ -62,23 +77,27 @@ bool respond(char *command){
         return true;
     }
     if(std::strcmp(command, "MATHS") == 0) {
-        strcpy(command, maths);                                                             //FTDI.printf("res sent %s", command);
+        strcpy(command, maths);                                                            //FTDI.printf("res sent %s", command);
         return true;
     }
     if(std::strcmp(command, "ADD") == 0) {
-        strcpy(command, add);                                                               //FTDI.printf("res sent %s", command);
+        strcpy(command, add);                                                            //FTDI.printf("res sent %s", command);
+        math = 1; ALU = 0;                                                              
         return true;
     }
-    if(std::strcmp(command, "MULT") == 0) {
-        strcpy(command, mult);                                                              //FTDI.printf("res sent %s", command);
+    if(std::strcmp(command, "MULTIPLY") == 0) {
+        strcpy(command, mult);                                                           //FTDI.printf("res sent %s", command);
+        math = 1; ALU = 2;                                                            
         return true;
     }
-    if(std::strcmp(command, "DIVIDE") == 0) {
-        strcpy(command, divide);                                                            //FTDI.printf("res sent %s", command);
+    if(std::strcmp(command, "DIVIDE") == 0) {                                            //FTDI.printf("res sent %s", command);
+        strcpy(command, divide);  
+        math = 1; ALU = 3;      
         return true;
     }
-    if(std::strcmp(command, "SUBTRACT") == 0) {
-        strcpy(command, sub);                                                            //FTDI.printf("res sent %s", command);
+    if(std::strcmp(command, "SUBTRACT") == 0) {                                         //FTDI.printf("res sent %s", command);
+        strcpy(command, sub);     
+        math = 1; ALU = 1;                                                       
         return true;
     }
     if(std::strcmp(command, "XYLOPHONE") == 0) {
@@ -156,7 +175,50 @@ bool detect_timeout(char *d_buff) {
     return false;
 }
 
-
+/**
+ * @brief Perform mathematical operations on numbers
+ * 
+ * @param numb The number in string format
+ */
+void maths_op(char *numb){
+    extracted_str = numb;
+    /* check if valid digit & store/concat */
+    if (std::isdigit(extracted_str[0])) {
+        int num;
+        ss << extracted_str;
+        num = atoi(ss.str().c_str());                                      
+        new_num[num_count] = num;                       //printf("num: %d, %d numbers\r\n", new_num[num_count], num_count);
+    /* start new number, keep track of numbers entered */
+    } else if (extracted_str == "AND") {
+        num_count++;                                    //printf("%d numbers\r\n", num_count);
+        ss.str("");
+        ss.clear();
+    /* if fininshed, calculate answer & store in char array */
+    } else if (extracted_str == "FINISHED") {           //printf("calculating..\r\n");
+        math = 0;
+        num_count++;                                    //printf("%d numbers\r\n", num_count);
+        for (int i = 0; i < num_count; i++) {           
+            if (i == 0) {
+                answer = new_num[i];
+            } else {
+                if (ALU == 0) {
+                    answer += new_num[i];
+                } else if (ALU == 1) {
+                    answer -= new_num[i];
+                } else if (ALU == 2) {
+                    answer *= new_num[i];
+                } else if (ALU == 3) {
+                    answer /= (double)new_num[i];
+                }                                   
+            }                                            printf("num: %f\r\n", answer);
+        }
+        if (floor(answer) == answer) {
+        sprintf(num_str, "The answer is %d", (int)answer);
+        } else {
+            sprintf(num_str, "The answer is %.2f", answer);
+        }                                              
+    }
+}
 
 /**
  * @brief Extracts a string from a larger string, cmdBuffer, based on the provided starting and ending positions.

@@ -1,3 +1,10 @@
+/**
+ * @file   EZvr.h
+ * @author Jacob Corr
+ * @date   22/01/2023
+ * @brief  Header file containing functions for the project
+ */
+
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
@@ -38,6 +45,16 @@ static volatile bool isSubscribed = false;
 NetworkInterface* network = NULL;
 TLSSocket *socket = new TLSSocket;
 MQTTClient* mqttClient = NULL;
+
+/* Initialise IO */
+InterruptIn btn1(BUTTON1);
+InterruptIn A(PTB9);
+InterruptIn B(PTD0);
+InterruptIn Y(PTC12);
+InterruptIn START(PTC5);
+InterruptIn BACK(PTB19);
+InterruptIn L(PTB18);
+InterruptIn R(PTB3);
 
 
 /* Function prototypes */

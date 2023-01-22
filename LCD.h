@@ -1,3 +1,10 @@
+/**
+ * @file   LCD.h
+ * @author Jacob Corr
+ * @date   22/01/2023
+ * @brief  Header file containing functions that interface with the Nokia 5110 LCD
+ */
+
 #ifndef __LCD_H__
 #define __LCD_H__
 
@@ -7,6 +14,7 @@
 #define MAX_NUM_STRINGS 6
 
 N5110 lcd(PTC9,PTC0,PTC7,PTD2,PTD1,PTC11);  // K64F - pwr from 3V3
+AnalogIn Pot(PTB2);
 
 static unsigned int guard = 0;
 
@@ -27,7 +35,7 @@ void lcd_init(void){
 
     lcd.clear();
     lcd.refresh();
-    ThisThread::sleep_for(500);
+    ThisThread::sleep_for(50);
 }
 
 /**
@@ -38,7 +46,8 @@ void lcd_init(void){
 void write_to_display(const char* input_string) {
     /* clear display */
     lcd.clear();
-    ThisThread::sleep_for(10);
+    lcd.setBrightness(Pot);
+    //ThisThread::sleep_for(10);
     /* split into up to 5 strings with a max length of 14 char */
     char output_strings[MAX_NUM_STRINGS][MAX_LEN];
     int num_strings;
@@ -70,7 +79,7 @@ void write_to_display(const char* input_string) {
         lcd.printString(output_strings[i], 0, i);
     }
     lcd.refresh();
-    ThisThread::sleep_for(30);
+    ThisThread::sleep_for(10);
 }
 
 /**

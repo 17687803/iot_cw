@@ -1,3 +1,11 @@
+/**
+ * @file   EZvr.h
+ * @author Jacob Corr
+ * @date   22/01/2023
+ * @brief  Header file containing functions that allow for MQTT connection 
+ *         with Google Cloud Platform
+ */
+
 #ifndef __MQTT_H__
 #define __MQTT_H__
 

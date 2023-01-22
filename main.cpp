@@ -1,3 +1,11 @@
+/**
+ * @file   main.cpp
+ * @author Jacob Corr
+ * @date   22/01/2023
+ * @brief  IOT Coursework main file. Creates a connection with google cloud platform
+ *         & runs a demo of a voice controlled teaching assistant with TTS capability
+ */
+
 #include "MQTT.h"
 #include "functions.h"
 #include "EZvr.h"
@@ -7,29 +15,22 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-PwmOut piezo(PTC10);
+
+// std::string extracted_str;
+// std::stringstream ss;
+
 int main()
 {
-    /* local variables */ 
-    int count = 0, timed = 0;                                       //FTDI.printf("main\r\n");printf("main\r\n");
-    char pub[128], display[128];
+    /* local variables */                                           //FTDI.printf("main\r\n");printf("main\r\n");
+    int count = 0, timed = 0;                                        
+    char pub[128], display[128], number[32];
     Ticker timeOut;
 
-    /* Initialise IO */
-    
-    InterruptIn btn1(BUTTON1);
-    InterruptIn A(PTB9);
-    InterruptIn B(PTD0);
-    InterruptIn Y(PTC12);
-    InterruptIn START(PTC5);
-    InterruptIn BACK(PTB19);
-    InterruptIn L(PTB18);
-    InterruptIn R(PTB3);
     /* assign interrupts */
     btn1.rise(handleButtonRise);
-    A.fall(handleButton2Rise);
-    B.fall(handleButton2Rise);
-    Y.fall(handleButton2Rise);
+    A.rise(handleButtonRise);
+    B.rise(handleButtonRise);
+    Y.rise(handleButtonRise);
     START.rise(handleButtonRise);
     BACK.rise(handleButtonRise);
     L.rise(handleButtonRise);
@@ -115,15 +116,25 @@ int main()
             if(detect_timeout(display)){
                 guard = 1;                                              //FTDI.printf("timed out");
                 timeOut.attach(&display_int, 1);
-                write_to_display("timed out! Please try again");
+                write_to_display("timed out!");
+            }
+            /* Handle Math Operations */
+            if(math == 1){
+                if(detect_command(number)){
+                    maths_op(number);
+                    /* if finished, publish answer on MQTT */
+                    if(math == 0){
+                        publish_message(num_str);
+                    }
+                }
             }          
             cmdBuffer.clear();
         }
         /* If no action taken, prompt user */ 
         if(guard == 0){
-            write_to_display("Please speak now..");
+            write_to_display("Please speak now");
         }
-        //lcd.setBrightness(0.5);  
+        
     }
     /* client has disconnected */
     printf("The client has disconnected.\r\n");
@@ -134,28 +145,6 @@ int main()
  * @brief Callback function called when button is pushed.
  */
 void handleButtonRise() {                                       //printf("button press\r\n");
-    // Set the PWM signal to 50% duty cycle
-    // piezo.write(0.5);
-    // Turn on the buzzer
-    // piezo = 1;
-    // Wait for a short duration
-    // ThisThread::sleep_for(50);
-    // Turn off the buzzer
-    // piezo = 0;
     testPublish = true;
 }
 
-/**
- * @brief Callback function called when button is pushed.
- */
-void handleButton2Rise() {                                       //printf("button press\r\n");
-    // Set the PWM signal to 50% duty cycle
-    //piezo.write(0.5);
-    // Turn on the buzzer
-    //piezo = 1;
-    // Wait for a short duration
-    //ThisThread::sleep_for(50);
-    // Turn off the buzzer
-    //piezo = 0;
-    testPublish = true;
-}
