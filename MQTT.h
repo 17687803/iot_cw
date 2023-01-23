@@ -1,5 +1,5 @@
 /**
- * @file   EZvr.h
+ * @file   MQTT.h
  * @author Jacob Corr
  * @date   22/01/2023
  * @brief  Header file containing functions that allow for MQTT connection 

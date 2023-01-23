@@ -25,6 +25,7 @@ int main()
     int count = 0, timed = 0;                                        
     char pub[128], display[128], number[32];
     Ticker timeOut;
+    
 
     /* assign interrupts */
     btn1.rise(handleButtonRise);
@@ -36,6 +37,7 @@ int main()
     L.rise(handleButtonRise);
     R.rise(handleButtonRise);
     serial.attach(&rx_interrupt, Serial::RxIrq);                    // printf("attach \r\n");
+    LED_GRN.write(1);
 
     /* begin init */
     lcd_init();
@@ -107,6 +109,18 @@ int main()
             EOL = 0;                                                    //FTDI.printf("%s\r\n",buffer.c_str());
             /* If command*/
             if(detect_command(pub)){
+                /* inform the user of received command */
+                flash_green();
+                /* Handle Math Operations */
+                if(math == 1){
+                    if(detect_command(number)){
+                        maths_op(number);
+                        /* if finished, publish answer on MQTT */
+                        if(math == 0){
+                            publish_message(num_str);
+                        }
+                    }
+                }   
                 /* generate response and publish to GCP*/
                 if(respond(pub)){                                       //FTDI.printf("pub recv %s", pub);
                 publish_message(pub);
@@ -118,16 +132,7 @@ int main()
                 timeOut.attach(&display_int, 1);
                 write_to_display("timed out!");
             }
-            /* Handle Math Operations */
-            if(math == 1){
-                if(detect_command(number)){
-                    maths_op(number);
-                    /* if finished, publish answer on MQTT */
-                    if(math == 0){
-                        publish_message(num_str);
-                    }
-                }
-            }          
+                   
             cmdBuffer.clear();
         }
         /* If no action taken, prompt user */ 

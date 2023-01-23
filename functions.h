@@ -1,5 +1,5 @@
 /**
- * @file   EZvr.h
+ * @file   functions.h
  * @author Jacob Corr
  * @date   22/01/2023
  * @brief  Header file containing functions for the project

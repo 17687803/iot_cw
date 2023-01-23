@@ -15,6 +15,7 @@
 
 RawSerial FTDI(PTC17, PTC16, 115200);       //UART3 - FTDI used to debug whilst USB serial was in use
 RawSerial serial(USBTX, USBRX, 115200);
+PwmOut LED_GRN(PTC4);
 
 Queue<char, 128> rx_buf;
 EventQueue queue;
@@ -27,9 +28,12 @@ osEvent evt = {};
 std::string cmdBuffer = "";
 std::string extracted_str;
 std::stringstream ss;
+Ticker LEDtimer;
 
 bool detect_command(char *msg);
 bool respond(char *command);
+void flash_green(void);
+void LED_cb(void);
 bool extract_str(char *msg, std::size_t start, std::size_t end);
 bool detect_math(char *msg);
 void rx_interrupt();
@@ -210,16 +214,30 @@ void maths_op(char *numb){
                 } else if (ALU == 3) {
                     answer /= (double)new_num[i];
                 }                                   
-            }                                            printf("num: %f\r\n", answer);
+            }                                            //printf("num: %f\r\n", answer);
         }
         if (floor(answer) == answer) {
-        sprintf(num_str, "The answer is %d", (int)answer);
+            sprintf(num_str, "The answer is %d", (int)answer);
         } else {
             sprintf(num_str, "The answer is %.2f", answer);
         }                                              
     }
 }
-
+/**
+ * @brief function for flashing LED.
+ *        Turns on LED, starts timer & attaches callback function
+ */
+void flash_green(void){
+    LED_GRN.write(0);
+    LEDtimer.attach(&LED_cb, 0.5);
+}
+/**
+ * @brief Interrupt handler for flashing LED.
+ *        Turns off LED after timer elapses
+ */
+void LED_cb(void){
+    LED_GRN.write(1);
+}
 /**
  * @brief Extracts a string from a larger string, cmdBuffer, based on the provided starting and ending positions.
  * The extracted string is then copied to the memory location pointed to by the msg parameter.
